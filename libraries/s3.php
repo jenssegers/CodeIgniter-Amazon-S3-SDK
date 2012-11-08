@@ -88,15 +88,25 @@ class S3
 	 * @param array configuration
 	 * @return void
 	 */
-	public function initialize($config) {
-	    foreach ($config as $key => $val) {
-		    if(!in_array($key, array('accessKey', 'secretKey'))) {
-			    self::$key = $val;
-		    }
+	public function initialize($config)
+	{
+		if (empty($config))
+		{
+			get_instance()->config->load('s3', TRUE);
+			$config = get_instance()->config->item('s3');
 		}
 		
-		if (isset($config["accessKey"]) && isset($config["secretKey"]))
-			self::setAuth($this->accessKey, $this->secretKey);
+		if (isset($config['accessKey']) && isset($config['secretKey']))
+		{
+			self::setAuth($config['accessKey'], $config['secretKey']);
+			unset($config['accessKey']);
+			unset($config['secretKey']);
+		}
+
+	    foreach ($config as $key => $val)
+	    {
+		    $this->$key = $val;
+		}
 	}
 
 
